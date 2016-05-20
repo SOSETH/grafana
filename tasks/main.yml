@@ -1,0 +1,39 @@
+---
+  # Verbatim: "On some older versions of Ubuntu and Debian you may need to install
+  # the apt-transport-https package which is needed to fetch packages over HTTPS."
+  - name: Install apt-transport-https
+    apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
+    with_items:
+      - apt-transport-https
+
+  # Verbatim from documentation :"Use the above line even if you are on Ubuntu or
+  # another Debian version."
+  - name: Add grafana repository
+    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=present
+    register: repochanged
+
+  - name: Add grafana repository key
+    apt_key: url=https://packagecloud.io/gpg.key state=present
+
+  - name: Explicitly refresh apt cache
+    apt: update_cache=yes
+    when: repochanged.changed
+
+  - name: Install grafana
+    apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
+    with_items:
+      - grafana
+
+  - name: Create database for grafana
+    mysql_db: login_host="{{ icinga_mysql_host }}" name=grafana state=present
+
+  - name: Create database user for grafana
+    mysql_user: login_host="{{ icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
+
+  - name: Configure grafana
+    template: src=grafana.ini.j2 dest=/etc/grafana/grafana.ini owner=root group=grafana mode=0644
+    notify: restart grafana
+
+  - name: Create grafana nginx config file
+    template: src=nginx-dropin.conf.j2 dest=/etc/nginx/base.d/grafana.conf owner=root group=root mode=0644
+    notify: restart nginx

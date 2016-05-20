@@ -1,0 +1,6 @@
+---
+grafana_bind_address: 127.0.0.1
+grafana_mariadb_password: FooBar
+grafana_mysql_host: 127.0.0.1
+grafana_analytics: "true"
+grafana_allow_signup: "false"
