@@ -31,8 +31,11 @@
     mysql_user: login_host="{{ icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
 
   - name: Configure grafana
-    template: src=grafana.ini.j2 dest=/etc/grafana/grafana.ini owner=root group=grafana mode=0644
+    template: src={{ item }}.j2 dest=/etc/grafana/{{ item }} owner=root group=grafana mode=0644
     notify: restart grafana
+    with_items:
+      - grafana.ini
+      - ldap.toml
 
   - name: Create grafana nginx config file
     template: src=nginx-dropin.conf.j2 dest=/etc/nginx/base.d/grafana.conf owner=root group=root mode=0644

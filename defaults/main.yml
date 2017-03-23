@@ -4,3 +4,9 @@ grafana_mariadb_password: FooBar
 grafana_mysql_host: 127.0.0.1
 grafana_analytics: "true"
 grafana_allow_signup: "false"
+grafana_ldap_hosts: ["ldap.example.org"]
+grafana_ldap_bind_user: "uid=sys_icinga_bind,cn=users,cn=accounts,dc=example,dc=org"
+grafana_ldap_bind_password: "MagicPassword"
+grafana_ldap_group_basedn: "cn=groups,cn=accounts,dc=example,dc=org"
+grafana_ldap_group_filter: "(&(objectClass=posixGroup)(member=uid=%s,cn=users,cn=accounts,dc=example,dc=org))"
+grafana_ldap_user_basedn: "cn=users,cn=accounts,dc=example,dc=org"
