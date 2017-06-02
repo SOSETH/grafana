@@ -8,8 +8,12 @@
 
   # Verbatim from documentation :"Use the above line even if you are on Ubuntu or
   # another Debian version."
+  # You used to have to use 'wheezy' for _all_ debian releases
+  - name: Remove old grafana repository
+    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=absent
+
   - name: Add grafana repository
-    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=present
+    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main' state=present
     register: repochanged
 
   - name: Add grafana repository key
@@ -25,10 +29,19 @@
       - grafana
 
   - name: Create database for grafana
-    mysql_db: login_host="{{ icinga_mysql_host }}" name=grafana state=present
+    mysql_db: login_host="{{ mon_icinga_mysql_host }}" name=grafana state=present
+    register: dbchanged
 
   - name: Create database user for grafana
-    mysql_user: login_host="{{ icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
+    mysql_user: login_host="{{ mon_icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
+
+  # Grafana has some issues with MariaDB ;-) They create their own schema but fail
+  # to set the row format to dynamic and then try to create indices with > 0.5KB column
+  # size, which fails
+  - name: Fix grafana's database...
+    when: not dbchanged.changed
+    shell: mysql --batch --skip-column-names --execute 'SELECT CONCAT("ALTER TABLE ", table_name, " ROW_FORMAT=DYNAMIC;") FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA="grafana";' | mysql grafana
+    changed_when: False
 
   - name: Configure grafana
     template: src={{ item }}.j2 dest=/etc/grafana/{{ item }} owner=root group=grafana mode=0644
