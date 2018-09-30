@@ -12,12 +12,12 @@
   - name: Remove old grafana repository
     apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=absent
 
+  - name: Add grafana repository key
+    apt_key: url=https://packagecloud.io/gpg.key state=present
+
   - name: Add grafana repository
     apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main' state=present
     register: repochanged
-
-  - name: Add grafana repository key
-    apt_key: url=https://packagecloud.io/gpg.key state=present
 
   - name: Explicitly refresh apt cache
     apt: update_cache=yes
