@@ -29,17 +29,19 @@
       - grafana
 
   - name: Create database for grafana
+    when: grafana_enable_ansible_db
     mysql_db: login_host="{{ mon_icinga_mysql_host }}" name=grafana state=present
     register: dbchanged
 
   - name: Create database user for grafana
+    when: grafana_enable_ansible_db
     mysql_user: login_host="{{ mon_icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
 
   # Grafana has some issues with MariaDB ;-) They create their own schema but fail
   # to set the row format to dynamic and then try to create indices with > 0.5KB column
   # size, which fails
   - name: Fix grafana's database...
-    when: not dbchanged.changed
+    when: grafana_enable_ansible_db and not dbchanged.changed
     shell: mysql --batch --skip-column-names --execute 'SELECT CONCAT("ALTER TABLE ", table_name, " ROW_FORMAT=DYNAMIC;") FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA="grafana";' | mysql grafana
     changed_when: False
 
@@ -53,3 +55,4 @@
   - name: Create grafana nginx config file
     template: src=nginx-dropin.conf.j2 dest=/etc/nginx/base.d/grafana.conf owner=root group=root mode=0644
     notify: restart nginx
+# vim: set ts=8 sw=2 tw=0 et :

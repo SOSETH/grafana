@@ -33,14 +33,14 @@ http_addr = {{ grafana_bind_address }}
 ;http_port = 3000
 
 # The public facing domain name used to access grafana from a browser
-;domain = localhost
+domain = {{ ansible_fqdn }}
 
 # Redirect to correct domain if host header does not match domain
 # Prevents DNS rebinding attacks
 ;enforce_domain = false
 
 # The full public facing url
-root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
+root_url = https://%(domain)s/grafana/
 
 # Log web requests
 ;router_logging = false
@@ -59,7 +59,7 @@ root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
 [database]
 # Either "mysql", "postgres" or "sqlite3", it's your choice
 type = mysql
-host = 127.0.0.1:3306
+host = {{ grafana_mysql_host }}
 name = grafana
 user = grafana
 password = {{ grafana_mariadb_password }}
@@ -73,7 +73,7 @@ password = {{ grafana_mariadb_password }}
 #################################### Session ####################################
 [session]
 # Either "memory", "file", "redis", "mysql", "postgres", default is "file"
-;provider = file
+provider = {{ grafana_session_provider }}
 
 # Provider config options
 # memory: not have any config yet
@@ -81,13 +81,13 @@ password = {{ grafana_mariadb_password }}
 # redis: config like redis server e.g. `addr=127.0.0.1:6379,pool_size=100,db=grafana`
 # mysql: go-sql-driver/mysql dsn config string, e.g. `user:password@tcp(127.0.0.1:3306)/database_name`
 # postgres: user=a password=b host=localhost port=5432 dbname=c sslmode=disable
-;provider_config = sessions
+provider_config = {{ grafana_session_provider_options }}
 
 # Session cookie name
 ;cookie_name = grafana_sess
 
 # If you use session in https only, default is false
-;cookie_secure = false
+cookie_secure = true
 
 # Session life time, default is 86400
 ;session_life_time = 86400
@@ -201,6 +201,19 @@ allow_sign_up = {{ grafana_allow_signup }}
 #################################### Basic Auth ##########################
 [auth.basic]
 ;enabled = true
+
+{% if grafana_enable_keycloak %}
+[auth.generic_oauth]
+enabled = true
+client_id = {{ grafana_keycloak_clientid }}
+client_secret = {{ grafana_keycloak_clientsecret }}
+scopes = openid profile email
+auth_url = {{ grafana_keycloak_base }}/auth
+token_url = {{ grafana_keycloak_base }}/token
+api_url = {{ grafana_keycloak_base }}/userinfo
+allowed_domains = {{ grafana_keycloak_domains }}
+allow_sign_up = true
+{% endif %}
 
 #################################### Auth LDAP ##########################
 [auth.ldap]
