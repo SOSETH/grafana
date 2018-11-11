@@ -10,30 +10,37 @@
   # another Debian version."
   # You used to have to use 'wheezy' for _all_ debian releases
   - name: Remove old grafana repository
+    become: True
     apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=absent
 
   - name: Add grafana repository key
+    become: True
     apt_key: url=https://packagecloud.io/gpg.key state=present
 
   - name: Add grafana repository
+    become: True
     apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main' state=present
     register: repochanged
 
   - name: Explicitly refresh apt cache
+    become: True
     apt: update_cache=yes
     when: repochanged.changed
 
   - name: Install grafana
+    become: True
     apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
     with_items:
       - grafana
 
   - name: Create database for grafana
+    become: True
     when: grafana_enable_ansible_db
     mysql_db: login_host="{{ mon_icinga_mysql_host }}" name=grafana state=present
     register: dbchanged
 
   - name: Create database user for grafana
+    become: True
     when: grafana_enable_ansible_db
     mysql_user: login_host="{{ mon_icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
 
@@ -41,11 +48,13 @@
   # to set the row format to dynamic and then try to create indices with > 0.5KB column
   # size, which fails
   - name: Fix grafana's database...
+    become: True
     when: grafana_enable_ansible_db and not dbchanged.changed
     shell: mysql --batch --skip-column-names --execute 'SELECT CONCAT("ALTER TABLE ", table_name, " ROW_FORMAT=DYNAMIC;") FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA="grafana";' | mysql grafana
     changed_when: False
 
   - name: Configure grafana
+    become: True
     template: src={{ item }}.j2 dest=/etc/grafana/{{ item }} owner=root group=grafana mode=0644
     notify: restart grafana
     with_items:
@@ -53,6 +62,7 @@
       - ldap.toml
 
   - name: Create grafana nginx config file
+    become: True
     template: src=nginx-dropin.conf.j2 dest=/etc/nginx/base.d/grafana.conf owner=root group=root mode=0644
     notify: restart nginx
 # vim: set ts=8 sw=2 tw=0 et :
