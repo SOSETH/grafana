@@ -18,3 +18,8 @@ grafana_keycloak_clientid: ""
 grafana_keycloak_clientsecret: ""
 grafana_keycloak_domains: ""
 grafana_enable_ansible_db: False
+grafana_group_mappings:
+  - name: isg
+    role: Admin
+  - name: vsos_team
+    role: Editor

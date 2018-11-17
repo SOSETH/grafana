@@ -71,17 +71,12 @@ username = "uid"
 member_of = "cn"
 email =  "mail"
 
-# Map ldap groups to grafana org roles
+{% for item in grafana_group_mappings %}
 [[servers.group_mappings]]
-# DO NOT USE THE DN! Grafana confuses CN and DN
-group_dn = "isg"
-org_role = "Admin"
-# The Grafana organization database id, optional, if left out the default org (id 1) will be used
-# org_id = 1
+group_dn = "{{ item.name }}"
+org_role = "{{ item.role }}"
 
-[[servers.group_mappings]]
-group_dn = "vsos_team"
-org_role = "Editor"
+{% endfor %}
 
 #[[servers.group_mappings]]
 # If you want to match all (or no ldap groups) then you can use wildcard
