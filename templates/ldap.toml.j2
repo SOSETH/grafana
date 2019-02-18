@@ -20,10 +20,12 @@ ssl_skip_verify = true
 bind_dn = '{{ grafana_ldap_bind_user }}'
 # Search user bind password
 # If the password contains # or ; you have to wrap it with trippel quotes. Ex """#password;"""
+{% if not grafana_ldap_is_ad %}
 bind_password = """{{ grafana_ldap_bind_password }}"""
+{% endif %}
 
 # User search filter, for example "(cn=%s)" or "(sAMAccountName=%s)" or "(uid=%s)"
-search_filter = "(uid=%s)"
+search_filter = "{{ grafana_ldap_user_filter }}"
 
 # An array of base dns to search through
 search_base_dns = ["{{ grafana_ldap_user_basedn }}"]
@@ -42,6 +44,7 @@ search_base_dns = ["{{ grafana_ldap_user_basedn }}"]
 #   recursively search your groups for the authenticating user's DN. For example:
 #
 #group_search_filter = "(member:1.2.840.113556.1.4.1941:=%s)"
+{% if not grafana_ldap_is_ad %}
 group_search_filter_user_attribute = "uid"
 group_search_base_dns = ["{{ grafana_ldap_group_basedn }}"]
 group_search_filter = "{{ grafana_ldap_group_filter }}"
@@ -60,22 +63,27 @@ group_search_filter = "{{ grafana_ldap_group_filter }}"
 # group_search_filter_user_attribute = "distinguishedName"
 ## An array of the base DNs to search through for groups. Typically uses ou=groups
 # group_search_base_dns = ["ou=groups,dc=grafana,dc=org"]
+{% endif %}
 
 # Specify names of the ldap attributes your ldap uses
 [servers.attributes]
 name = "givenName"
 surname = "sn"
-# YOU NEED TO USE uid here. If you do not use uid it will not be included in the query!
-username = "uid"
-# DO NOT USE MEMBER. YES, THE DOCUMENTATION IS WRONG!
-member_of = "cn"
+username = "{{ grafana_ldap_username }}"
+member_of = "{{ grafana_ldap_memberof }}"
 email =  "mail"
 
 {% for item in grafana_group_mappings %}
 [[servers.group_mappings]]
+{% if not grafana_ldap_is_ad %}
 group_dn = "{{ item.name }}"
+{% else %}
+group_dn = "{{ item.dn }}"
+{% endif %}
 org_role = "{{ item.role }}"
-
+{% if item.role == "Admin" %}
+grafana_admin = true
+{% endif %}
 {% endfor %}
 
 #[[servers.group_mappings]]

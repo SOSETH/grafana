@@ -10,6 +10,11 @@ grafana_ldap_bind_password: ""
 grafana_ldap_group_basedn: ""
 grafana_ldap_group_filter: ""
 grafana_ldap_user_basedn: ""
+grafana_ldap_user_filter: "(uid=%s)"
+grafana_ldap_is_ad: False
+# If you do not use uid it will not be included in the query!
+grafana_ldap_username: "uid"
+grafana_ldap_memberof: "cn"
 grafana_session_provider: mysql
 grafana_session_provider_options: "user:password@tcp(127.0.0.1:3306)/database_name"
 grafana_enable_keycloak: true

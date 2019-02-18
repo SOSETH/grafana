@@ -9,17 +9,23 @@
   # Verbatim from documentation :"Use the above line even if you are on Ubuntu or
   # another Debian version."
   # You used to have to use 'wheezy' for _all_ debian releases
-  - name: Remove old grafana repository
+  - name: Remove very old grafana repository
     become: True
     apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=absent
 
+  - name: Remove old grafana repository
+    become: True
+    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main' state=absent
+
   - name: Add grafana repository key
     become: True
-    apt_key: url=https://packagecloud.io/gpg.key state=present
+    apt_key:
+      data: "{{ lookup('file', 'files/grafana.asc') }}"
+      state: present
 
   - name: Add grafana repository
     become: True
-    apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main' state=present
+    apt_repository: repo='deb https://packages.grafana.com/oss/deb stable main' state=present
     register: repochanged
 
   - name: Explicitly refresh apt cache
