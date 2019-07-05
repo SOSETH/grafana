@@ -35,19 +35,22 @@
 
   - name: Install grafana
     become: True
-    apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
-    with_items:
-      - grafana
+    apt:
+      name:
+        - grafana
+      state: present
+      update_cache: yes
+      cache_valid_time: 1800
 
   - name: Create database for grafana
     become: True
-    when: grafana_enable_ansible_db
+    when: grafana_enable_ansible_db|bool
     mysql_db: login_host="{{ mon_icinga_mysql_host }}" name=grafana state=present
     register: dbchanged
 
   - name: Create database user for grafana
     become: True
-    when: grafana_enable_ansible_db
+    when: grafana_enable_ansible_db|bool
     mysql_user: login_host="{{ mon_icinga_mysql_host }}" name=grafana password="{{ grafana_mariadb_password }}" priv="grafana.*:ALL"
 
   # Grafana has some issues with MariaDB ;-) They create their own schema but fail
