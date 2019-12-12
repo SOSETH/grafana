@@ -28,3 +28,5 @@ grafana_group_mappings:
     role: Admin
   - name: vsos_team
     role: Editor
+
+mon_icinga_mysql_host: localhost
