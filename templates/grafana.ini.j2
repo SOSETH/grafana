@@ -59,10 +59,10 @@ root_url = https://%(domain)s/grafana/
 [database]
 # Either "mysql", "postgres" or "sqlite3", it's your choice
 type = mysql
-host = {{ grafana_mysql_host }}
+host = {{ grafana_db_host }}
 name = grafana
 user = grafana
-password = {{ grafana_mariadb_password }}
+password = {{ grafana_db_password }}
 
 # For "postgres" only, either "disable", "require" or "verify-full"
 ;ssl_mode = disable

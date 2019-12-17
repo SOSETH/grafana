@@ -1,9 +1,13 @@
 ---
 grafana_bind_address: 127.0.0.1
-grafana_mariadb_password: FooBar
-grafana_mysql_host: 127.0.0.1
+
+grafana_db_host: 127.0.0.1
+grafana_db_password: ""
+grafana_enable_ansible_db: False
+
 grafana_analytics: "true"
 grafana_allow_signup: "false"
+
 grafana_ldap_hosts: []
 grafana_ldap_bind_user: ""
 grafana_ldap_bind_password: ""
@@ -15,18 +19,15 @@ grafana_ldap_is_ad: False
 # If you do not use uid it will not be included in the query!
 grafana_ldap_username: "uid"
 grafana_ldap_memberof: "cn"
-grafana_session_provider: mysql
-grafana_session_provider_options: "user:password@tcp(127.0.0.1:3306)/database_name"
-grafana_enable_keycloak: true
+grafana_group_mappings: []
+#  - name: group_name
+#    role: Admin
+
+grafana_enable_keycloak: False
 grafana_keycloak_base: ""
 grafana_keycloak_clientid: ""
 grafana_keycloak_clientsecret: ""
 grafana_keycloak_domains: ""
-grafana_enable_ansible_db: False
-grafana_group_mappings:
-  - name: isg
-    role: Admin
-  - name: vsos_team
-    role: Editor
 
-mon_icinga_mysql_host: localhost
+grafana_session_provider: mysql
+grafana_session_provider_options: "user:password@tcp(127.0.0.1:3306)/database_name"
