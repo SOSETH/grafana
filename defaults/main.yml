@@ -1,4 +1,5 @@
 ---
+grafana_enable_repo: False
 grafana_bind_address: 127.0.0.1
 
 grafana_db_host: 127.0.0.1
@@ -31,3 +32,11 @@ grafana_keycloak_domains: ""
 
 grafana_session_provider: mysql
 grafana_session_provider_options: "user:password@tcp(127.0.0.1:3306)/database_name"
+
+grafana_enable_new_alerts: False
+grafana_enable_smtp: False
+grafana_smtp_server: mail.example.org:587
+grafana_smtp_user: user
+grafana_smtp_password: password
+grafana_smtp_from: grafana@example.org
+grafana_smtp_from_name: Grafana Alerts

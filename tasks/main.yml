@@ -8,9 +8,11 @@
     apt_key:
       data: "{{ lookup('file', 'files/grafana.asc') }}"
       state: present
+    when: grafana_enable_repo
 
   - name: Add grafana repository
     become: True
+    when: grafana_enable_repo
     apt_repository:
       repo: 'deb https://packages.grafana.com/oss/deb stable main'
       state: present
@@ -20,7 +22,7 @@
     become: True
     apt:
       update_cache: yes
-    when: repochanged.changed
+    when: grafana_enable_repo and repochanged.changed
 
   - name: Install grafana
     become: True
