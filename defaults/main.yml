@@ -6,8 +6,21 @@ grafana_db_host: 127.0.0.1
 grafana_db_password: ""
 grafana_enable_ansible_db: False
 
-grafana_analytics: "true"
-grafana_allow_signup: "false"
+grafana_analytics: True
+grafana_allow_signup: False
+grafana_min_refresh_interval: "30s"
+grafana_default_home_dashboard_path: ""
+grafana_allow_org_create: True
+grafana_welcome_email_on_sign_up: True
+
+grafana_date_formats:
+  full_date: "YYYY-MM-DD HH:mm:ss"
+  interval_second: "HH:mm:ss"
+  interval_minute: "HH:mm"
+  interval_hour: "DD/MM HH:mm"
+  interval_day: "DD/MM"
+  interval_month: "YYYY-MM"
+  interval_year: "YYYY"
 
 grafana_ldap_hosts: []
 grafana_ldap_bind_user: ""

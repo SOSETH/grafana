@@ -226,7 +226,7 @@ password = {{ grafana_db_password }}
 # No ip addresses are being tracked, only simple counters to track
 # running instances, dashboard and error counts. It is very helpful to us.
 # Change this option to false to disable reporting.
-reporting_enabled = {{ grafana_analytics }}
+reporting_enabled = {{ grafana_analytics|lower }}
 
 # The name of the distributor of the Grafana instance. Ex hosted-grafana, grafana-labs
 ;reporting_distributor = grafana-labs
@@ -391,18 +391,18 @@ content_security_policy_template = """script-src 'self' 'unsafe-eval' 'unsafe-in
 
 # Minimum dashboard refresh interval. When set, this will restrict users to set the refresh interval of a dashboard lower than given interval. Per default this is 5 seconds.
 # The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
-min_refresh_interval = 30s
+min_refresh_interval = {{ grafana_min_refresh_interval }}
 
 # Path to the default home dashboard. If this value is empty, then Grafana uses StaticRootPath + "dashboards/home.json"
-;default_home_dashboard_path =
+default_home_dashboard_path = {{ grafana_default_home_dashboard_path }}
 
 #################################### Users ####################################
 [users]
 # disable user signup / registration
-allow_sign_up = {{ grafana_allow_signup }}
+allow_sign_up = {{ grafana_allow_signup|lower }}
 
 # Allow non admin users to create organizations
-;allow_org_create = true
+allow_org_create = {{ grafana_allow_org_create|lower }}
 
 # Set to true to automatically assign new users to the default organization (id 1)
 ;auto_assign_org = true
@@ -746,7 +746,7 @@ from_name = {{ grafana_smtp_from_name }}
 ;startTLS_policy = NoStartTLS
 
 [emails]
-welcome_email_on_sign_up = true
+welcome_email_on_sign_up = {{ grafana_welcome_email_on_sign_up|lower }}
 ;templates_pattern = emails/*.html, emails/*.txt
 ;content_types = text/html
 {% endif %}
@@ -1280,15 +1280,15 @@ enabled           = false
 # For information on what formatting patterns that are supported https://momentjs.com/docs/#/displaying/
 
 # Default system date format used in time range picker and other places where full time is displayed
-;full_date = YYYY-MM-DD HH:mm:ss
+full_date = {{ grafana_date_formats.full_date }}
 
 # Used by graph and other places where we only show small intervals
-;interval_second = HH:mm:ss
-;interval_minute = HH:mm
-;interval_hour = MM/DD HH:mm
-;interval_day = MM/DD
-;interval_month = YYYY-MM
-;interval_year = YYYY
+interval_second = {{ grafana_date_formats.interval_second }}
+interval_minute = {{ grafana_date_formats.interval_minute }}
+interval_hour = {{ grafana_date_formats.interval_hour }}
+interval_day = {{ grafana_date_formats.interval_day }}
+interval_month = {{ grafana_date_formats.interval_month }}
+interval_year = {{ grafana_date_formats.interval_year }}
 
 # Experimental feature
 ;use_browser_locale = false
