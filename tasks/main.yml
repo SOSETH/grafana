@@ -1,75 +1,76 @@
 ---
-  - fail:
-      msg: "Bailing out: grafana_db_password is not set"
-    when: grafana_db_password == ''
+- name: Check if grafana_db_password is set
+  ansible.builtin.fail:
+    msg: "Bailing out: grafana_db_password is not set"
+  when: grafana_db_password == ''
 
-  - name: Add grafana repository key
-    become: True
-    apt_key:
-      data: "{{ lookup('file', 'files/grafana.asc') }}"
-      state: present
-    when: grafana_enable_repo
+- name: Add grafana repository key
+  become: true
+  ansible.builtin.apt_key:
+    data: "{{ lookup('file', 'files/grafana.asc') }}"
+    state: present
+  when: grafana_enable_repo
 
-  - name: Add grafana repository
-    become: True
-    when: grafana_enable_repo
-    apt_repository:
-      repo: 'deb https://packages.grafana.com/oss/deb stable main'
-      state: present
-    register: repochanged
+- name: Add grafana repository
+  become: true
+  when: grafana_enable_repo
+  ansible.builtin.apt_repository:
+    repo: 'deb https://packages.grafana.com/oss/deb stable main'
+    state: present
+  register: repochanged
 
-  - name: Explicitly refresh apt cache
-    become: True
-    apt:
-      update_cache: yes
-    when: grafana_enable_repo and repochanged.changed
+- name: Explicitly refresh apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: grafana_enable_repo and repochanged.changed
 
-  - name: Install grafana
-    become: True
-    apt:
-      name:
-        - grafana
-      state: present
-      update_cache: yes
-      cache_valid_time: 1800
+- name: Install grafana
+  become: true
+  ansible.builtin.apt:
+    name:
+      - grafana
+    state: present
+    update_cache: true
+    cache_valid_time: 1800
 
-  - name: Create database for grafana
-    become: True
-    mysql_db:
-      login_host: "{{ grafana_db_host }}"
-      name: grafana
-      state: present
-    when: grafana_enable_ansible_db|bool
-    register: dbchanged
+- name: Create database for grafana
+  become: true
+  community.mysql.mysql_db:
+    login_host: "{{ grafana_db_host }}"
+    name: grafana
+    state: present
+  when: grafana_enable_ansible_db|bool
+  register: dbchanged
 
-  - name: Create database user for grafana
-    become: True
-    mysql_user:
-      login_host: "{{ grafana_db_host }}"
-      name: grafana
-      password: "{{ grafana_db_password }}"
-      priv: "grafana.*:ALL"
-    when: grafana_enable_ansible_db|bool
+- name: Create database user for grafana
+  become: true
+  community.mysql.mysql_user:
+    login_host: "{{ grafana_db_host }}"
+    name: grafana
+    password: "{{ grafana_db_password }}"
+    priv: "grafana.*:ALL"
+  when: grafana_enable_ansible_db|bool
 
-  - name: Configure grafana
-    become: True
-    template:
-      src: "{{ item }}.j2"
-      dest: "/etc/grafana/{{ item }}"
-      owner: root
-      group: grafana
-      mode: 0640
-    notify: restart grafana
-    with_items:
-      - grafana.ini
-      - ldap.toml
+- name: Configure grafana
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/grafana/{{ item }}"
+    owner: root
+    group: grafana
+    mode: "0640"
+  notify: Restart grafana
+  with_items:
+    - grafana.ini
+    - ldap.toml
 
-  - name: Create grafana nginx config file
-    become: True
-    template:
-      src: nginx-dropin.conf.j2
-      dest: "/etc/nginx/base.d/grafana.conf"
-      owner: root
-      group: root
-      mode: 0644
-    notify: restart nginx
+- name: Create grafana nginx config file
+  become: true
+  ansible.builtin.template:
+    src: nginx-dropin.conf.j2
+    dest: "/etc/nginx/base.d/grafana.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx

@@ -1,14 +1,14 @@
 ---
-  - name: restart nginx
-    become: True
-    service:
-      name: nginx
-      enabled: yes
-      state: restarted
+- name: Restart nginx
+  become: true
+  ansible.builtin.service:
+    name: nginx
+    enabled: true
+    state: restarted
 
-  - name: restart grafana
-    become: True
-    service:
-      name: grafana-server
-      enabled: yes
-      state: restarted
+- name: Restart grafana
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    enabled: true
+    state: restarted

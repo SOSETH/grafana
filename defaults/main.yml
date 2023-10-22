@@ -1,17 +1,17 @@
 ---
-grafana_enable_repo: False
+grafana_enable_repo: false
 grafana_bind_address: 127.0.0.1
 
 grafana_db_host: 127.0.0.1
 grafana_db_password: ""
-grafana_enable_ansible_db: False
+grafana_enable_ansible_db: false
 
-grafana_analytics: True
-grafana_allow_signup: False
+grafana_analytics: true
+grafana_allow_signup: false
 grafana_min_refresh_interval: "30s"
 grafana_default_home_dashboard_path: ""
-grafana_allow_org_create: True
-grafana_welcome_email_on_sign_up: True
+grafana_allow_org_create: true
+grafana_welcome_email_on_sign_up: true
 
 grafana_date_formats:
   full_date: "YYYY-MM-DD HH:mm:ss"
@@ -29,7 +29,7 @@ grafana_ldap_group_basedn: ""
 grafana_ldap_group_filter: ""
 grafana_ldap_user_basedn: ""
 grafana_ldap_user_filter: "(uid=%s)"
-grafana_ldap_is_ad: False
+grafana_ldap_is_ad: false
 # If you do not use uid it will not be included in the query!
 grafana_ldap_username: "uid"
 grafana_ldap_memberof: "cn"
@@ -37,7 +37,7 @@ grafana_group_mappings: []
 #  - name: group_name
 #    role: Admin
 
-grafana_enable_keycloak: False
+grafana_enable_keycloak: false
 grafana_keycloak_base: ""
 grafana_keycloak_clientid: ""
 grafana_keycloak_clientsecret: ""
@@ -46,8 +46,8 @@ grafana_keycloak_domains: ""
 grafana_session_provider: mysql
 grafana_session_provider_options: "user:password@tcp(127.0.0.1:3306)/database_name"
 
-grafana_enable_new_alerts: False
-grafana_enable_smtp: False
+grafana_enable_new_alerts: false
+grafana_enable_smtp: false
 grafana_smtp_server: mail.example.org:587
 grafana_smtp_user: user
 grafana_smtp_password: password
